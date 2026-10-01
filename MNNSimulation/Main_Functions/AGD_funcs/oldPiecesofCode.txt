@@ -1,0 +1,29 @@
+     % initialize derivative of displacement wrt stiffness
+    dudK = zeros(Nnodes * 3 * Ncases, Nnodes * 3 * Ncases, Nnodes * 3 * Ncases); % third order tensor
+    dudK_dummy = zeros(size(dudK,1),size(dudK,2),size(dudK,3),length(F)); % fourth order tensor to store dummy variables to be summed
+    for IDX_l = 1:size(dudK,1) % index of displacement
+        for IDX_j = 1:size(dudK,2) % index of first dimension of derivant stiffness
+            for IDX_i = 1:size(dudK,3) % index of second dimension of derivant stiffness
+                for IDX_m = 1:length(F) % index of input force
+                    % compute dummy terms
+                    dudK_dummy(IDX_l,IDX_j,IDX_i,IDX_m) = -(dFdu(IDX_m,IDX_l))^-1 * (dFdK(IDX_m,IDX_j,IDX_i));
+                end
+                % compute derivative of displacement wrt stiffness
+                dudK(IDX_l,IDX_j,IDX_i) = sum(dudK_dummy(IDX_l,IDX_j,IDX_i,:));
+            end
+        end
+    end
+
+    % initialize derivative of loss function wrt stiffness
+    dLdK = zeros(Nnodes * 3 * Ncases, Nnodes * 3 * Ncases); % second order tensor
+    dLdK_dummy = zeros(size(dLdK,1), size(dLdK,2), length(dLdu)); % third order tensor to store dummy variables to be summed
+    for IDX_j = 1:size(dLdK,1) % index of first dimension of derivant stiffness
+        for IDX_i = 1:size(dLdK,2) % index of second dimension of derivant stiffness
+            for IDX_l = 1:length(dLdu) % index of derivative of loss wrt displacement
+                % compute dummy terms
+                dLdK_dummy(IDX_j,IDX_i,IDX_l) = dLdu(IDX_l) * dudK(IDX_l,IDX_j,IDX_i);
+            end
+            % compute derivative of loss wrt stiffness
+            dLdK(IDX_j,IDX_i) = sum(dLdK_dummy(IDX_j,IDX_i,:));
+        end
+    end
