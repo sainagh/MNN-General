@@ -1,5 +1,7 @@
 # Generalized Learning in MNNs
 
+DOI 10.5281/zenodo.23326786
+
 The following repository includes the data and code used in a study on generalized learning and elliptical interpolation in mechanical neural networks (MNNs).
 
 ## MNNSimulation
